@@ -122,18 +122,8 @@ def update_course(course_id):
                 return jsonify({
                     'message': 'Course does not exist in database'
                 }), 400
-<<<<<<< HEAD
-<<<<<<< HEAD
-            elif validate_course.validate_course_category() and \
-               validate_course.validate_course_duration():
-=======
             elif validate_course.validate_course_name() and \
                     validate_course.validate_course_duration():
->>>>>>> Added custom decorator for admin protected route
-=======
-            elif validate_course.validate_course_name() and \
-                    validate_course.validate_course_duration():
->>>>>>> 7c0b74da3dd88465b41c64b0583e808007975251
                 course_controller.update_course(data, course_id)
                 return jsonify({"message": "course updated successfully"}), 200
             elif not validate_course.validate_course_category():
