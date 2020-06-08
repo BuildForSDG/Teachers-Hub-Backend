@@ -1,15 +1,38 @@
 import psycopg2
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt_identity
 
 from ..validators.course_validator import ValidateCourse
 from .controller import CourseController
 
+from functools import wraps
+
+
 course = Blueprint('course', __name__)
 course_controller = CourseController()
 
+# This custom decorator that verifies the JWT is present in
+# the request, as well as insure that the user has a role of
+# `Admin` in the access token
+
+
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        verify_jwt_in_request()
+        current_user = get_jwt_identity()
+        role = str(current_user['role'])[1:-1].replace('\'', '')
+        #print(role)
+        if role == 'Admin':
+            return f(*args, **kwargs)
+        else:
+            return jsonify(msg='Only Course Administrators can perform this action!'), 403
+
+    return wrapper
+
 
 @course.route('/api/v1/courses', methods=['POST'])
+@admin_required
 def add_new_course():
     """Registers a Course."""
     data = request.get_json()
@@ -32,6 +55,7 @@ def add_new_course():
 
 
 @course.route('/api/v1/courses/<course_id>', methods=['DELETE'])
+@admin_required
 def delete_course(course_id):
     """
     Function enables admin to delete a course from the database.
@@ -83,6 +107,7 @@ def view_course(course_id):
 
 
 @course.route('/api/v1/courses/<course_id>', methods=['PUT'])
+@admin_required
 def update_course(course_id):
     """
     Function enables user to modify a course from the database.
@@ -98,7 +123,7 @@ def update_course(course_id):
                     'message': 'Course does not exist in database'
                 }), 400
             elif validate_course.validate_course_name() and \
-               validate_course.validate_course_duration():
+                    validate_course.validate_course_duration():
                 course_controller.update_course(data, course_id)
                 return jsonify({"message": "course updated successfully"}), 200
             elif not validate_course.validate_course_name():
@@ -127,6 +152,7 @@ def view_all_courses():
         'courses': courses,
         'message': 'courses fetched!'
     }), 200
+
 
 @course.route('/api/v1/courses/<course_id>/enroll', methods=['POST'])
 @jwt_required
