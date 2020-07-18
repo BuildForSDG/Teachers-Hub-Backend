@@ -178,3 +178,20 @@ def get_enrolled_course():
     return jsonify({
         'enrolled_courses': enrolledCourses
     }), 200
+
+@course.route('/api/v1/courses/enrolled/<course_id>', methods=['GET'])
+@jwt_required
+def get_enrolled_course_state(course_id):
+    """
+    Function enables user to get state of enrolled course
+    """
+    enrolledCourseState = course_controller.check_if_already_enrolled(course_id)
+
+    if not enrolledCourseState:
+        return jsonify({
+            'message': "Not Registered"
+        })
+    else:
+        return jsonify({
+            'message': 'Registered'
+        })
