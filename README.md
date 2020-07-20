@@ -39,6 +39,7 @@ This project addresses the following SDG targets:
 | GET     | api/v1/courses/&lt;course_id>/modules/&lt;module_id> | Fetch module content for a single module  |
 | POST    | api/v1/courses/&lt;course_id>/modules/&lt;module_id> | Create module content for a single module |
 | GET     | api/v1/courses/enrolled                              | Fetch courses enrolled for                |
+| GET     | api/v1/courses/enrolled/<course_id>                  | Check enrollment status                   |
 
 ### PARTNERS
 
