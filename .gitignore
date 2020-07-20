@@ -11,6 +11,5 @@ src.egg-info
 __pycache__
 venv/
 .venv/
-
-
+.idea
 
